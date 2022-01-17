@@ -12,7 +12,7 @@ class CamClient:
         return requests.get(url, auth=HTTPDigestAuth(self.user, self.passwd))
 
     def download_img(self, fname):
-        url = f"http://{self.ip}/cgi-bin/image.jpg"
+        url = f"http://{self.ip}/cgi-bin/image.jpg?display_mode=simple"
         resp = self.get_digest_auth(url)
         if resp.status_code == 200:
             with open(fname, "wb") as f:
