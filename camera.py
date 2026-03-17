@@ -3,20 +3,20 @@ from requests.auth import HTTPDigestAuth
 
 exposure_times = [
     "1_16000",
-    "1_8000",
-    "1_4000",
-    "1_2000",
-    "1_1000",
-    "1_500",
-    "1_250",
-    "1_90",
-    "1_60",
-    "1_30",
-    "1_10",
-    "1_5",
-    "1_3",
-    "1_2",
-    "1_1",
+    "1__8000",
+    "1__4000",
+    "1__2000",
+    "1__1000",
+    "1___500",
+    "1___250",
+    "1____90",
+    "1____60",
+    "1____30",
+    "1____10",
+    "1____5",
+    "1____3",
+    "1____2",
+    "1____1",
 ]
 api_values = [
     80,
@@ -46,9 +46,9 @@ class CamClient:
 
     def get_digest_auth(self, url):
         return requests.get(url, auth=HTTPDigestAuth(self.user, self.passwd))
-
+    
     def download_img(self, fname):
-        url = f"http://{self.ip}/cgi-bin/image.jpg?display_mode=simple"
+        url = f"http://{self.ip}/cgi-bin/image.jpg?imgprof=LAPUP_CUSTOM"
         resp = self.get_digest_auth(url)
         if resp.status_code == 200:
             with open(fname, "wb") as f:
@@ -63,3 +63,13 @@ class CamClient:
     def set_exposure(self, value):
         url = f"http://{self.ip}/control/control/?set&section=exposure&ca_exp_max={value}&ca_exp_min={value}"
         self.get_digest_auth(url)
+
+    def get_text(self):
+        return requests.get(f"http://{self.ip}/control/camerainfo?text").text
+
+def extract_lux(data):
+    lines = data.strip().split('\n')
+    for line in lines:
+        if line.startswith("Illumination"):
+            label, value, units = line.split()
+    return float(value)
