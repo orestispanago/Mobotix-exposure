@@ -1,6 +1,6 @@
-from ftplib import FTP, error_perm
-import os
 import logging
+import os
+from ftplib import FTP, error_perm
 
 logger = logging.getLogger(__name__)
 

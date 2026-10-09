@@ -1,10 +1,11 @@
 import datetime
-import os
 import glob
-import shutil
 import logging
 import logging.config
+import os
+import shutil
 import traceback
+
 from camera import CamClient, exp_api_dict, exposure_times
 from ftp import upload_files
 
@@ -21,7 +22,7 @@ CAM_USER = ""
 CAM_PASS = ""
 
 FTP_IP = ""
-FTP_USER = "camra"
+FTP_USER = "camera"
 FTP_PASSWORD = ""
 FTP_DIR = ""
 
