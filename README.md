@@ -8,3 +8,13 @@
 
 * Deletes local images folder
 
+
+### Setup
+
+```
+sudo apt install python3-dotenv
+cp .env.example .env
+chmod 600 .env
+```
+
+Set the real values in `.env` (FTP and camera credentials), replacing the placeholders. It is in `.gitignore`.

@@ -7,6 +7,7 @@ import shutil
 import traceback
 
 from camera import CamClient, exp_api_dict, exposure_times
+from config import CAM_IP, CAM_PASS, CAM_USER, FTP_IP, FTP_PASS, FTP_USER
 from ftp import upload_files
 
 dname = os.path.dirname(__file__)
@@ -17,14 +18,7 @@ logging.config.fileConfig("logging.conf", disable_existing_loggers=False)
 logging.getLogger("urllib3").setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
 
-CAM_IP = ""
-CAM_USER = ""
-CAM_PASS = ""
-
-FTP_IP = ""
-FTP_USER = "camera"
-FTP_PASSWORD = ""
-FTP_DIR = ""
+FTP_DIR = "/cams/All-Sky/lapup-Q71-exposure"
 
 LUX_MIN = 5000
 
@@ -47,7 +41,7 @@ def main():
             cam_client.download_img(f"{folder_name}/{date_time}_exp_{exp}.jpg")
         cam_client.reset_factory_exposure()
         local_files = glob.glob("**/*.jpg", recursive=True)
-        upload_files(FTP_IP, FTP_USER, FTP_PASSWORD, FTP_DIR, local_files)
+        upload_files(FTP_IP, FTP_USER, FTP_PASS, FTP_DIR, local_files)
 
         shutil.rmtree(folder_name)
     else:
