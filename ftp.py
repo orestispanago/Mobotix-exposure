@@ -24,6 +24,7 @@ def make_dirs(ftp_session, folder_path):
 
 
 def upload_files(ftp_ip, ftp_user, ftp_password, ftp_dir, local_files):
+    uploaded = []
     with FTP(ftp_ip, ftp_user, ftp_password) as ftp_session:
         ftp_session.cwd(ftp_dir)
         for local_file in local_files:
@@ -31,8 +32,13 @@ def upload_files(ftp_ip, ftp_user, ftp_password, ftp_dir, local_files):
             remote_path = local_file
             try:
                 upload_file(ftp_session, local_file, remote_path)
+                uploaded.append(local_file)
             except error_perm as e:
                 if "55" in str(e):
                     make_dirs(ftp_session, os.path.dirname(remote_path))
                     ftp_session.cwd(ftp_dir)
                     upload_file(ftp_session, local_file, remote_path)
+                    uploaded.append(local_file)
+                else:
+                    logger.error(f"Could not upload {local_file}: {e}")
+    return uploaded

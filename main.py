@@ -3,7 +3,6 @@ import glob
 import logging
 import logging.config
 import os
-import shutil
 import traceback
 
 from camera import CamClient, exp_api_dict, exposure_times
@@ -21,6 +20,20 @@ logger = logging.getLogger(__name__)
 FTP_DIR = "/cams/All-Sky/lapup-Q71-exposure"
 
 LUX_MIN = 5000
+
+
+def delete_local_files(local_files):
+    for local_file in local_files:
+        os.remove(local_file)
+    logger.info(f"Deleted {len(local_files)} local files")
+
+
+def delete_empty_dirs(local_files):
+    for local_file in local_files:
+        try:
+            os.removedirs(os.path.dirname(local_file))
+        except OSError:
+            pass
 
 
 def main():
@@ -41,9 +54,9 @@ def main():
             cam_client.download_img(f"{folder_name}/{date_time}_exp_{exp}.jpg")
         cam_client.reset_factory_exposure()
         local_files = glob.glob("**/*.jpg", recursive=True)
-        upload_files(FTP_IP, FTP_USER, FTP_PASS, FTP_DIR, local_files)
-
-        shutil.rmtree(folder_name)
+        uploaded = upload_files(FTP_IP, FTP_USER, FTP_PASS, FTP_DIR, local_files)
+        delete_local_files(uploaded)
+        delete_empty_dirs(uploaded)
     else:
         logger.warning(f"Illuminance < {LUX_MIN}, skipped.")
 
