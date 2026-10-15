@@ -2,5 +2,5 @@
 __pycache__/
 
 *.jpg
-*.log
+logs/
 .env
