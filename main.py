@@ -5,9 +5,24 @@ import logging.config
 import os
 import traceback
 
+import ftp
+import sftp
 from camera import CamClient, exp_api_dict, exposure_times
-from config import CAM_IP, CAM_PASS, CAM_USER, FTP_IP, FTP_PASS, FTP_USER
-from ftp import upload_files
+from config import (
+    CAM_IP,
+    CAM_PASS,
+    CAM_USER,
+    FTP_IP,
+    FTP_PASS,
+    FTP_USER,
+    REMOTE_DIR,
+    SFTP_HOST,
+    SFTP_KNOWN_HOSTS,
+    SFTP_PASS,
+    SFTP_PORT,
+    SFTP_USER,
+    UPLOAD_PROTOCOL,
+)
 
 dname = os.path.dirname(__file__)
 os.chdir(dname)
@@ -15,11 +30,28 @@ os.chdir(dname)
 os.makedirs("logs", exist_ok=True)
 logging.config.fileConfig("logging.conf", disable_existing_loggers=False)
 logging.getLogger("urllib3").setLevel(logging.WARNING)
+logging.getLogger("paramiko").setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
 
-FTP_DIR = "/cams/All-Sky/lapup-Q71-exposure"
-
 LUX_MIN = 5000
+
+
+def upload_files(local_files):
+    if UPLOAD_PROTOCOL == "sftp":
+        uploaded = sftp.upload_files(
+            SFTP_HOST,
+            SFTP_PORT,
+            SFTP_USER,
+            SFTP_PASS,
+            SFTP_KNOWN_HOSTS,
+            REMOTE_DIR,
+            local_files,
+        )
+    else:
+        uploaded = ftp.upload_files(
+            FTP_IP, FTP_USER, FTP_PASS, REMOTE_DIR, local_files
+        )
+    return uploaded
 
 
 def delete_local_files(local_files):
@@ -54,7 +86,7 @@ def main():
             cam_client.download_img(f"{folder_name}/{date_time}_exp_{exp}.jpg")
         cam_client.reset_factory_exposure()
         local_files = glob.glob("**/*.jpg", recursive=True)
-        uploaded = upload_files(FTP_IP, FTP_USER, FTP_PASS, FTP_DIR, local_files)
+        uploaded = upload_files(local_files)
         delete_local_files(uploaded)
         delete_empty_dirs(uploaded)
     else:
