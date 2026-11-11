@@ -60,7 +60,7 @@ class CamClient:
         return resp
 
     def download_img(self, fname):
-        url = f"http://{self.ip}/cgi-bin/image.jpg"
+        url = f"http://{self.ip}/cgi-bin/image.jpg?quality=90&sharpen=0"
         resp = self.get_digest_auth(url)
         if resp.status_code == 200:
             with open(fname, "wb") as f:
@@ -76,7 +76,11 @@ class CamClient:
 
     def set_exposure(self, value):
         logger.debug(f"Setting exposure: {value}")
-        url = f"http://{self.ip}/control/control/?set&section=exposure&ca_exp_max={value}&ca_exp_min={value}"
+        url = (
+            f"http://{self.ip}/control/control/?set&section=exposure&"
+            f"ca_exp_max={value}&ca_exp_min={value}&"
+            f"ca_avg_intensity=10&ca_exp_minavg=0&automatic=off&backlight=0"
+        )
         self.get_digest_auth(url)
 
     def get_camera_info(self):
