@@ -22,5 +22,5 @@ Set the real values in `.env` (server and camera credentials), replacing the pla
 ### Cronjob
 
 ```bash
-*/10 * * * * python3 ~/Mobotix-exposure/main.py
+* * * * * /usr/bin/flock -w 0 ~/mobotix_exposure.lock python3 ~/Mobotix-exposure/main.py
 ```
