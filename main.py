@@ -3,6 +3,7 @@ import glob
 import logging
 import logging.config
 import os
+import time
 import traceback
 
 import ftp
@@ -83,6 +84,7 @@ def main():
         cam_client.download_img(f"{folder_name}/{date_time}_exp_auto.jpg")
         for exp in exposure_times[:6]:
             cam_client.set_exposure(exp_api_dict.get(exp))
+            time.sleep(2)
             cam_client.download_img(f"{folder_name}/{date_time}_exp_{exp}.jpg")
         cam_client.reset_factory_exposure()
         local_files = glob.glob("**/*.jpg", recursive=True)

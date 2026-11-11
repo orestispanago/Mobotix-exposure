@@ -50,7 +50,9 @@ class CamClient:
 
     def get_digest_auth(self, url):
         logger.debug(f"Attempting GET Digest Auth request to: {url}")
-        resp = requests.get(url, auth=HTTPDigestAuth(self.user, self.passwd))
+        resp = requests.get(
+            url, auth=HTTPDigestAuth(self.user, self.passwd), timeout=5
+        )
         if resp.status_code == 200:
             logger.debug(f"GET request status 200 OK")
         else:
@@ -58,7 +60,7 @@ class CamClient:
         return resp
 
     def download_img(self, fname):
-        url = f"http://{self.ip}/cgi-bin/image.jpg?imgprof=LAPUP_CUSTOM"
+        url = f"http://{self.ip}/cgi-bin/image.jpg"
         resp = self.get_digest_auth(url)
         if resp.status_code == 200:
             with open(fname, "wb") as f:
